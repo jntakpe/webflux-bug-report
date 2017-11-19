@@ -9,11 +9,18 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext
 import org.springframework.http.MediaType
+import org.springframework.restdocs.RestDocumentationContextProvider
+import org.springframework.restdocs.RestDocumentationExtension
+import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
+import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
+import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.document
+import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation.documentationConfiguration
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.reactive.server.WebTestClient
 
+
 @SpringBootTest
-@ExtendWith(SpringExtension::class)
+@ExtendWith(SpringExtension::class, RestDocumentationExtension::class)
 class WebfluxBugReportApplicationTests {
 
     private lateinit var webTestClient: WebTestClient
@@ -23,9 +30,10 @@ class WebfluxBugReportApplicationTests {
     }
 
     @BeforeEach
-    fun beforeEach(context: ReactiveWebApplicationContext) {
+    fun beforeEach(context: ReactiveWebApplicationContext, restDocumentation: RestDocumentationContextProvider) {
         webTestClient = WebTestClient.bindToApplicationContext(context)
                 .configureClient()
+                .filter(documentationConfiguration(restDocumentation))
                 .build()
     }
 
@@ -43,6 +51,7 @@ class WebfluxBugReportApplicationTests {
                     Assertions.assertThat(user.username).isNotNull()
                     Assertions.assertThat(user.password).isNull()
                 }
+                .consumeWith(document("user", responseFields(fieldWithPath("user.name").description("The user's name"))))
     }
 
     @Test

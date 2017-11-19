@@ -37,7 +37,7 @@ buildscript {
 plugins {
     val kotlinVersion = "1.1.60"
     val springIOVersion = "1.0.3.RELEASE"
-    val asciiDocVersion = "1.5.3"
+    val asciiDocVersion = "1.5.6"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
     id("io.spring.dependency-management") version springIOVersion
@@ -62,11 +62,11 @@ dependencies {
     testCompile("org.springframework.boot:spring-boot-starter-test") {
         exclude(module = "junit")
     }
-    testCompile("org.springframework.restdocs:spring-restdocs-webtestclient")
     testCompile("io.projectreactor:reactor-test")
     testCompile("org.junit.jupiter:junit-jupiter-api")
     testCompile("org.springframework.restdocs:spring-restdocs-webtestclient")
     testRuntime("org.junit.jupiter:junit-jupiter-engine")
+    asciidoctor("org.springframework.restdocs:spring-restdocs-asciidoctor")
 }
 
 dependencyManagement {
@@ -88,5 +88,12 @@ tasks {
             jvmTarget = "1.8"
             freeCompilerArgs = listOf("-Xjsr305=strict")
         }
+    }
+    val testTask = withType<Test> {
+        outputs.dir(snippetsDir)
+    }
+    withType<AsciidoctorTask> {
+        inputs.dir(snippetsDir)
+        dependsOn(testTask)
     }
 }

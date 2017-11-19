@@ -5,10 +5,13 @@ import com.github.jntakpe.webfluxbugreport.WebfluxBugReportApplication.Views.Int
 import com.github.jntakpe.webfluxbugreport.WebfluxBugReportApplication.Views.Public
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import reactor.core.publisher.Mono
 import reactor.core.publisher.toMono
 
 @SpringBootApplication
@@ -24,11 +27,11 @@ class WebfluxBugReportApplication {
 
         @JsonView(Public::class)
         @GetMapping("/{username}")
-        fun findPublic(@PathVariable username: String) = User(username, "pwd").toMono()
+        fun findPublic(@PathVariable username: String): Mono<User> = User(username, "pwd").toMono()
 
         @JsonView(Internal::class)
         @GetMapping("/{username}", params = arrayOf("withpwd"))
-        fun findInternal(@PathVariable username: String) = User(username, "pwd").toMono()
+        fun findInternal(@PathVariable username: String): Mono<ResponseEntity<User>> = User(username, "pwd").toMono().map { ResponseEntity(it, HttpStatus.OK) }
 
     }
 
