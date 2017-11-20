@@ -31,7 +31,7 @@ class WebfluxBugReportApplication {
 
         @JsonView(Internal::class)
         @GetMapping("/{username}", params = arrayOf("withpwd"))
-        fun findInternal(@PathVariable username: String): Mono<ResponseEntity<User>> = User(username, "pwd").toMono().map { ResponseEntity(it, HttpStatus.OK) }
+        fun findInternal(@PathVariable username: String): Mono<User> = User(username, "pwd").toMono()
 
     }
 

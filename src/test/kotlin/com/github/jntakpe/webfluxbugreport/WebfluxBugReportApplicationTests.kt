@@ -20,7 +20,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
 
 
 @SpringBootTest
-@ExtendWith(SpringExtension::class, RestDocumentationExtension::class)
+@ExtendWith(SpringExtension::class)
 class WebfluxBugReportApplicationTests {
 
     private lateinit var webTestClient: WebTestClient
@@ -30,10 +30,9 @@ class WebfluxBugReportApplicationTests {
     }
 
     @BeforeEach
-    fun beforeEach(context: ReactiveWebApplicationContext, restDocumentation: RestDocumentationContextProvider) {
+    fun beforeEach(context: ReactiveWebApplicationContext) {
         webTestClient = WebTestClient.bindToApplicationContext(context)
                 .configureClient()
-                .filter(documentationConfiguration(restDocumentation))
                 .build()
     }
 
